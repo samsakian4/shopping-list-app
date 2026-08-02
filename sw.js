@@ -1,4 +1,4 @@
-const CACHE = "shopping-list-v1";
+const CACHE = "shopping-list-v2";
 const ASSETS = ["./", "./index.html", "./style.css", "./app.js", "./products-data.js", "./manifest.json"];
 
 self.addEventListener("install", (e) => {

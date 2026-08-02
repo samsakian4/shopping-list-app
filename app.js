@@ -251,6 +251,10 @@ async function enterApp(householdId) {
   hide("household-screen");
   hide("auth-screen");
 
+  // مهم: بعد از ساخت/پیوستن به خانواده، state.profile هنوز household_id قدیمی (خالی) رو داره.
+  // بدون این خط، افزودن آیتم و بقیه‌ی عملیات با household_id نامعتبر شکست می‌خورن.
+  state.profile.household_id = householdId;
+
   const { data: hh } = await sb.from("households").select("*").eq("id", householdId).single();
   state.household = hh;
 
