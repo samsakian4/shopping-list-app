@@ -26,6 +26,12 @@ const PRODUCTS_SEED = [
   { name: "خامه صبحانه", brand: "کاله", size: "۲۰۰ گرمی", unit: "ظرف", category: "لبنیات", price: 45000 },
   { name: "دوغ گازدار", brand: "کاله", size: "۱.۵ لیتری", unit: "بطری", category: "لبنیات", price: 38000 },
   { name: "دوغ سنتی", brand: "دامداران", size: "۱ لیتری", unit: "بطری", category: "لبنیات", price: 32000 },
+  { name: "پنیر UF", brand: "هراز", size: "۴۰۰ گرمی", unit: "بسته", category: "لبنیات", price: 85000 },
+  { name: "پنیر لیوانی UF", brand: "هراز", size: "۱۰۰ گرمی", unit: "لیوان", category: "لبنیات", price: 21000 },
+  { name: "شیر پرچرب", brand: "هراز", size: "۱ لیتر", unit: "بطری", category: "لبنیات", price: 45000 },
+  { name: "ماست پرچرب", brand: "هراز", size: "۹۰۰ گرمی", unit: "ظرف", category: "لبنیات", price: 44000 },
+  { name: "دوغ گازدار", brand: "هراز", size: "۱.۵ لیتری", unit: "بطری", category: "لبنیات", price: 37000 },
+  { name: "کره پاستوریزه", brand: "هراز", size: "۵۰ گرمی", unit: "بسته", category: "لبنیات", price: 33000 },
   { name: "کشک سنتی", brand: "سمیه", size: "۵۰۰ گرمی", unit: "بطری", category: "لبنیات", price: 55000 },
 
   // ---------- میوه و تره‌بار ----------

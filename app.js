@@ -347,16 +347,21 @@ document.addEventListener("click", (e) => {
 function renderSuggestions(rawQuery) {
   const q = normalize(rawQuery);
   if (!q) { suggestionsBox.classList.add("hidden"); return; }
+  const tokens = q.split(/\s+/).filter(Boolean);
 
   const pool = allSearchable();
   const scored = pool
     .map((p) => {
       const n = normalize(p.name);
       const b = normalize(p.brand || "");
-      let score = -1;
-      if (n.startsWith(q)) score = 3;
-      else if (n.includes(q)) score = 2;
-      else if (b.includes(q)) score = 1;
+      const full = `${n} ${b}`;
+      let score = 0;
+      if (full.includes(q)) score += 5; // کل عبارت عیناً پیدا شد
+      tokens.forEach((t) => {
+        if (n.startsWith(t)) score += 3;
+        else if (n.includes(t)) score += 2;
+        else if (b.includes(t)) score += 1;
+      });
       return { p, score };
     })
     .filter((x) => x.score > 0)
@@ -365,6 +370,15 @@ function renderSuggestions(rawQuery) {
     .map((x) => x.p);
 
   suggestionsBox.innerHTML = "";
+
+  if (!scored.length) {
+    const hint = document.createElement("div");
+    hint.className = "suggestion-custom";
+    hint.style.color = "var(--ink-muted)";
+    hint.textContent = "چیزی توی کاتالوگ محلی پیدا نشد — می‌تونی به‌عنوان مورد جدید اضافه‌ش کنی، از این به بعد خودش پیشنهاد داده می‌شه.";
+    suggestionsBox.appendChild(hint);
+  }
+
   scored.forEach((p) => {
     const est = estimatedPriceFor(p.name, p.brand, p.size, p.price);
     const row = document.createElement("div");
