@@ -12,6 +12,11 @@
 </head>
 <body>
 
+<div id="install-banner" class="install-banner hidden">
+  <button id="install-btn" class="btn btn-primary">📲 نصب اپ روی صفحه اصلی</button>
+</div>
+
+
 <!-- ===================== بارگذاری اولیه ===================== -->
 <div id="boot-screen" class="centered-screen">
   <div class="spinner"></div>
@@ -137,6 +142,19 @@
     <div class="modal-actions">
       <button class="btn btn-outline" id="purchase-skip">رد شدن</button>
       <button class="btn btn-primary" id="purchase-confirm">ثبت قیمت</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== مودال ویرایش قیمت ===================== -->
+<div id="edit-price-modal" class="modal-backdrop hidden">
+  <div class="modal-sheet">
+    <h3>ویرایش قیمت «<span id="edit-price-name"></span>»</h3>
+    <p>قیمت واحد رو اصلاح کن — هم توی برآورد کل این خرید اعمال می‌شه، هم دفعه‌ی بعد که همین کالا رو اضافه کنی.</p>
+    <div class="field"><input id="edit-price-input" type="number" inputmode="numeric" /></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" id="edit-price-cancel">انصراف</button>
+      <button class="btn btn-primary" id="edit-price-confirm">ذخیره</button>
     </div>
   </div>
 </div>

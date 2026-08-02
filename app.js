@@ -541,7 +541,7 @@ function renderActiveList() {
         <span class="qty-val">${item.quantity}</span>
         <button class="qty-btn" data-act="plus" data-id="${item.id}">+</button>
       </div>
-      <div class="item-price">${formatToman(item.estimated_price * item.quantity)}</div>
+      <button type="button" class="item-price" data-id="${item.id}">${formatToman(item.estimated_price * item.quantity)}<span class="edit-hint"> ✎</span></button>
       <button class="item-remove" data-id="${item.id}">✕</button>
     `;
     wrap.appendChild(el);
@@ -550,6 +550,7 @@ function renderActiveList() {
   wrap.querySelectorAll(".toggle").forEach((t) => t.addEventListener("click", () => openPurchaseModal(t.dataset.id)));
   wrap.querySelectorAll(".qty-btn").forEach((b) => b.addEventListener("click", () => changeQty(b.dataset.id, b.dataset.act)));
   wrap.querySelectorAll(".item-remove").forEach((b) => b.addEventListener("click", () => removeItem(b.dataset.id)));
+  wrap.querySelectorAll(".item-price").forEach((b) => b.addEventListener("click", () => openEditPriceModal(b.dataset.id)));
 }
 
 function renderHistoryList() {
@@ -662,6 +663,47 @@ async function unpurchaseItem(id) {
   }).eq("id", id);
 }
 
+// ---- ویرایش دستی قیمت تخمینی روی آیتم‌های هنوز‌خریداری‌نشده ----
+let editPriceTargetId = null;
+function openEditPriceModal(id) {
+  const item = state.items.find((i) => i.id === id);
+  if (!item) return;
+  editPriceTargetId = id;
+  document.getElementById("edit-price-name").textContent = item.custom_name;
+  document.getElementById("edit-price-input").value = Math.round(item.estimated_price);
+  show("edit-price-modal");
+}
+document.getElementById("edit-price-cancel").addEventListener("click", () => {
+  hide("edit-price-modal");
+  editPriceTargetId = null;
+});
+document.getElementById("edit-price-confirm").addEventListener("click", async () => {
+  const id = editPriceTargetId;
+  const newPrice = Number(document.getElementById("edit-price-input").value);
+  hide("edit-price-modal");
+  editPriceTargetId = null;
+  if (!id || !(newPrice > 0)) return;
+
+  const item = state.items.find((i) => i.id === id);
+  if (!item) return;
+
+  item.estimated_price = newPrice; // رندر خوش‌بینانه
+  renderAll();
+
+  await sb.from("shopping_items").update({ estimated_price: newPrice }).eq("id", id);
+
+  // این اصلاح رو هم به تاریخچه‌ی قیمت اضافه کن تا دفعه‌ی بعد که همین کالا رو
+  // اضافه می‌کنید، برآورد اولیه دقیق‌تر باشه
+  const key = itemKey(item.custom_name, item.brand, item.package_size);
+  await sb.from("price_history").insert({
+    household_id: state.profile.household_id, item_key: key, price: newPrice,
+  });
+  if (!state.priceHistory[key]) state.priceHistory[key] = [];
+  state.priceHistory[key].push(newPrice);
+
+  toast("قیمت بروز شد");
+});
+
 // ============================================================
 // تب‌ها
 // ============================================================
@@ -675,6 +717,27 @@ function switchTab(tab) {
   document.getElementById("chip-row").classList.toggle("hidden", tab !== "list");
   document.getElementById("history-list").classList.toggle("hidden", tab !== "history");
 }
+
+// ============================================================
+// نصب روی صفحه اصلی (Add to Home Screen)
+// ============================================================
+let deferredInstallPrompt = null;
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  document.getElementById("install-banner").classList.remove("hidden");
+});
+document.getElementById("install-btn").addEventListener("click", async () => {
+  if (!deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  const { outcome } = await deferredInstallPrompt.userChoice;
+  deferredInstallPrompt = null;
+  document.getElementById("install-banner").classList.add("hidden");
+  if (outcome === "accepted") toast("نصب شد 🎉");
+});
+window.addEventListener("appinstalled", () => {
+  document.getElementById("install-banner").classList.add("hidden");
+});
 
 // ============================================================
 // شروع برنامه
